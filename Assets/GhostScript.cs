@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class GhostScript : MonoBehaviour
 {
-    private Animator Anim;
+    public Animator Anim;
     public CharacterController Ctrl;
     private Vector3 MoveDirection = Vector3.zero;
     // Cache hash values
@@ -49,8 +49,44 @@ public class GhostScript : MonoBehaviour
         {
             Anim.CrossFade(DissolveState, 0.1f, 0, 0);
             DissolveFlg = true;
-            gate.GetComponent<Spawner>().instanceCount--;
-            Destroy(gameObject);
+            if(gate) gate.GetComponent<Spawner>().instanceCount--;
+            //Destroy(gameObject);
+            GameObject dissolve = new GameObject();
+            dissolve.transform.position = transform.position;
+            var facing = gameObject.transform.eulerAngles;
+            facing.x += 270;
+            dissolve.transform.eulerAngles = facing;
+
+            ParticleSystem dissolveParticle = dissolve.AddComponent<ParticleSystem>();
+            dissolveParticle.Stop();
+            var impactRenderer = dissolveParticle.GetComponent<Renderer>();
+            //impactRenderer.material = new Material();
+            
+            var main = dissolveParticle.main;
+
+            main.duration = 0.5f;
+            main.startLifetime = 0.1f;
+            main.startSize = 0.05f;
+            main.loop = false;
+
+            var shape = dissolveParticle.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = 30;
+            shape.radius = 0;
+
+            ParticleSystem.EmissionModule em = dissolveParticle.emission;
+            em.enabled = true;
+            em.rateOverTime = 0;
+            em.SetBursts(
+                new ParticleSystem.Burst[] 
+                {
+                    new ParticleSystem.Burst(0, 5)
+                }
+            );
+
+            dissolveParticle.Play();
+
+            Destroy(dissolve, 1f);
         }
         // processing at respawn
         else if(HP == maxHP && DissolveFlg)

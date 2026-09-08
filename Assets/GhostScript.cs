@@ -31,6 +31,9 @@ public class GhostScript : MonoBehaviour
     // moving speed
     [SerializeField] private float speed = 4;
 
+    public Material dissolveMaterial;
+public Mesh[] particleMesh;
+
     void Start()
     {
         Anim = this.GetComponent<Animator>();
@@ -45,29 +48,34 @@ public class GhostScript : MonoBehaviour
         transform.LookAt(player.transform.position);
         GRAVITY();
         // Dissolve
-        if(HP <= 0 && !DissolveFlg)
+        if (HP <= 0 && !DissolveFlg)
         {
-            Anim.CrossFade(DissolveState, 0.1f, 0, 0);
-            DissolveFlg = true;
-            if(gate) gate.GetComponent<Spawner>().instanceCount--;
-            //Destroy(gameObject);
+
+            if (gate) gate.GetComponent<Spawner>().instanceCount--;
+            
             GameObject dissolve = new GameObject();
             dissolve.transform.position = transform.position;
+            dissolve.transform.localScale *= 500f;
             var facing = gameObject.transform.eulerAngles;
             facing.x += 270;
             dissolve.transform.eulerAngles = facing;
 
             ParticleSystem dissolveParticle = dissolve.AddComponent<ParticleSystem>();
             dissolveParticle.Stop();
-            var impactRenderer = dissolveParticle.GetComponent<Renderer>();
-            //impactRenderer.material = new Material();
-            
+            var dissolveRenderer = dissolveParticle.GetComponent<Renderer>();
+            dissolveRenderer.material = dissolveMaterial;
+            var dissolveParticleRenderer = dissolveParticle.GetComponent<ParticleSystemRenderer>();
+            dissolveParticleRenderer.renderMode = ParticleSystemRenderMode.Mesh;
+            dissolveParticleRenderer.SetMeshes(particleMesh);
+
             var main = dissolveParticle.main;
 
-            main.duration = 0.5f;
-            main.startLifetime = 0.1f;
-            main.startSize = 0.05f;
+            main.duration = 5f;
+            main.startLifetime = 5f;
+            main.startSize = 1f;
             main.loop = false;
+            main.simulationSpeed = 0.00005f;
+            
 
             var shape = dissolveParticle.shape;
             shape.shapeType = ParticleSystemShapeType.Cone;
@@ -78,7 +86,7 @@ public class GhostScript : MonoBehaviour
             em.enabled = true;
             em.rateOverTime = 0;
             em.SetBursts(
-                new ParticleSystem.Burst[] 
+                new ParticleSystem.Burst[]
                 {
                     new ParticleSystem.Burst(0, 5)
                 }
@@ -86,10 +94,12 @@ public class GhostScript : MonoBehaviour
 
             dissolveParticle.Play();
 
-            Destroy(dissolve, 1f);
+            Destroy(dissolve, 5f);
+            
+            Destroy(gameObject);
         }
         // processing at respawn
-        else if(HP == maxHP && DissolveFlg)
+        else if (HP == maxHP && DissolveFlg)
         {
             DissolveFlg = false;
         }

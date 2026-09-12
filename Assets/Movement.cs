@@ -43,14 +43,7 @@ public class Movement : MonoBehaviour
     public bool dash;
 
     public int dashCooldown = 0;
-    public void OnGUI()
-    {
-            if(menuState)
-            {
-                GUI.backgroundColor = Color.white;
-                GUI.Box(new Rect(100, 100, 200, 100), "Paused", onScreenStyle);
-            }
-    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,7 +86,15 @@ public class Movement : MonoBehaviour
             }
         }
     }
-    
+    public void OnGUI()
+    {
+            if(menuState)
+            {
+                GUI.backgroundColor = Color.white;
+                GUI.Box(new Rect(100, 100, 200, 100), "Paused", onScreenStyle);
+            }
+
+    }
     public void OnMove(InputAction.CallbackContext context)
     {
         moveDirection = context.ReadValue<Vector2>();

@@ -54,8 +54,8 @@ public Mesh[] particleMesh;
             if (gate) gate.GetComponent<Spawner>().instanceCount--;
             
             GameObject dissolve = new GameObject();
-            dissolve.transform.position = transform.position;
-            dissolve.transform.localScale *= 500f;
+            dissolve.transform.position = new Vector3(transform.localPosition.x, transform.localPosition.y + 0.5f, transform.localPosition.z);
+            dissolve.transform.localScale *= 5f;
             var facing = gameObject.transform.eulerAngles;
             facing.x += 270;
             dissolve.transform.eulerAngles = facing;
@@ -70,16 +70,18 @@ public Mesh[] particleMesh;
 
             var main = dissolveParticle.main;
 
-            main.duration = 5f;
-            main.startLifetime = 5f;
+            main.duration = 1f;
+            main.startLifetime = 1f;
             main.startSize = 1f;
             main.loop = false;
-            main.simulationSpeed = 0.00005f;
+            main.startSpeed = 0.1f;
+            main.startSpeedMultiplier = 0.5f;
+            
             
 
             var shape = dissolveParticle.shape;
             shape.shapeType = ParticleSystemShapeType.Cone;
-            shape.angle = 30;
+            shape.angle = 70;
             shape.radius = 0;
 
             ParticleSystem.EmissionModule em = dissolveParticle.emission;
@@ -88,13 +90,15 @@ public Mesh[] particleMesh;
             em.SetBursts(
                 new ParticleSystem.Burst[]
                 {
-                    new ParticleSystem.Burst(0, 5)
+                    new ParticleSystem.Burst(0, 5),
+                    new ParticleSystem.Burst(0.1f, 5),
+                    new ParticleSystem.Burst(0.2f, 5)
                 }
             );
 
             dissolveParticle.Play();
 
-            Destroy(dissolve, 5f);
+            Destroy(dissolve, 1f);
             
             Destroy(gameObject);
         }
@@ -108,10 +112,7 @@ public Mesh[] particleMesh;
         {
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
         }
-        else
-        {
-            transform.Translate(Vector3.back * speed * Time.deltaTime);
-        }
+
     }
 
     //---------------------------------------------------------------------

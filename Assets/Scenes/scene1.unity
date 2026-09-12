@@ -173,11 +173,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7474390637926133325, guid: 69410e0dd42df1348b226850e9d70b00, type: 3}
       propertyPath: spawnMax
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7474390637926133325, guid: 69410e0dd42df1348b226850e9d70b00, type: 3}
       propertyPath: maxOnScreen
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

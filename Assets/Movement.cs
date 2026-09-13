@@ -43,6 +43,7 @@ public class Movement : MonoBehaviour
     public bool dash;
 
     public int dashCooldown = 0;
+    public int score = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -94,6 +95,7 @@ public class Movement : MonoBehaviour
                 GUI.Box(new Rect(100, 100, 200, 100), "Paused", onScreenStyle);
             }
 
+            GUI.Box(new Rect(100, 50, 200, 100), "Score: " + score, onScreenStyle);
     }
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -111,12 +113,13 @@ public class Movement : MonoBehaviour
             audioSource.Play();
             Physics.Raycast(Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.47F, 0)), out RaycastHit hit);
             
+
+
+        if (hit.transform)
+        {//Impact point sparks
             GameObject hitObject = hit.transform.gameObject;
             hitObject.SendMessage("TakeDamage", 1, SendMessageOptions.DontRequireReceiver);
             Debug.Log("Hit " + hitObject.name);
-
-
-            //Impact point sparks
             GameObject impact = new GameObject();
             impact.transform.position = hit.point;
             var dir = (hit.point - gameObject.transform.position).normalized;
@@ -154,7 +157,7 @@ public class Movement : MonoBehaviour
 
             impactParticle.Play();
 
-            Destroy(impact, 1f);
+            Destroy(impact, 1f);}
         }
     }
 

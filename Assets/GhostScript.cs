@@ -150,7 +150,7 @@ public Mesh[] particleMesh;
     public void TakeDamage(int damage)
     {
         HP = 0;
-
+        player.GetComponent<Movement>().score++;
 
     }
 }

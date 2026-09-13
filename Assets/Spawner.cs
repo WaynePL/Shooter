@@ -23,7 +23,7 @@ public class Spawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(instanceCount < maxOnScreen && counter > 60)
+        if(instanceCount < maxOnScreen && counter > 120)
         {
             enemy = Instantiate(spawnObject, transform.position, transform.rotation);
             enemy.name = gameObject.name + " Ghost " + totalSpawns;

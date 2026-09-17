@@ -68,6 +68,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 46f311046d2104da8b56be3d0a49a119, type: 3}
       insertIndex: -1
       addedObject: {fileID: -5539435904399684674}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 46f311046d2104da8b56be3d0a49a119, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4445727810169272617}
   m_SourcePrefab: {fileID: 100100000, guid: 46f311046d2104da8b56be3d0a49a119, type: 3}
 --- !u!1 &19588385245968726 stripped
 GameObject:
@@ -141,10 +144,13 @@ MonoBehaviour:
   gate: {fileID: 0}
   status_name: 0
   range: 5
-  speed: 12
+  bulletMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  attackCooldown: 0
+  speed: 5
   dissolveMaterial: {fileID: 2100000, guid: d11e6205c7cc9470aacd9fde3100bfe2, type: 2}
   particleMesh:
   - {fileID: 3038391321006430457, guid: 75a31ba731f05044fa7395434c6031b4, type: 3}
+  bulletMaterial: {fileID: 2100000, guid: d11e6205c7cc9470aacd9fde3100bfe2, type: 2}
 --- !u!114 &-5539435904399684674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +165,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   paused: 0
   times: 0
+--- !u!136 &4445727810169272617
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19588385245968726}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.7
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.49, z: 0}
 --- !u!137 &839705036205447455 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 514471462265150744, guid: 46f311046d2104da8b56be3d0a49a119, type: 3}

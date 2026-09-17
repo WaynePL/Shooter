@@ -15,19 +15,19 @@ public class PauseSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // if (Input.GetKeyDown(KeyCode.Escape))
-        // {
-        //     if (paused)
-        //     {
-        //         Time.timeScale = 1;
-        //         paused = false;
-        //     }
-        //     else
-        //     {
-        //         Time.timeScale = 0.2f;
-        //         paused = true;
-        //     }
-        // }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (paused)
+            {
+                Time.timeScale = 1;
+                paused = false;
+            }
+            else
+            {
+                Time.timeScale = 0;
+                paused = true;
+            }
+        }
         
     }
 }

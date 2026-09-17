@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,11 +30,14 @@ public class GhostScript : MonoBehaviour
 
     public int status_name;
     public float range;
+    public Mesh bulletMesh;
+    public int attackCooldown = 0;
     // moving speed
     [SerializeField] private float speed = 4;
 
     public Material dissolveMaterial;
-public Mesh[] particleMesh;
+    public Mesh[] particleMesh;
+    public Material bulletMaterial;
 
     void Start()
     {
@@ -46,7 +51,6 @@ public Mesh[] particleMesh;
     {
         //rotate towards the player
         transform.LookAt(player.transform.position);
-        GRAVITY();
         // Dissolve
         if (HP <= 0 && !DissolveFlg)
         {
@@ -110,28 +114,44 @@ public Mesh[] particleMesh;
 
         if (Vector3.Distance(player.transform.position, transform.position) > range)
         {
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            Ctrl.Move(transform.forward * speed * Time.deltaTime);
+        }
+        else
+        {
+            //attack
+            if (attackCooldown > 240)
+            {            
+                rangedAttack();
+                attackCooldown = 0;
+            }
+            else
+            {
+                attackCooldown++;
+            }
         }
 
     }
 
-    //---------------------------------------------------------------------
-    // gravity for fall of this character
-    //---------------------------------------------------------------------
-    private void GRAVITY ()
+    private void rangedAttack()
     {
-        if(Ctrl.enabled)
-        {
-            if(CheckGrounded())
-            {
-                if(MoveDirection.y < -0.1f)
-                {
-                    MoveDirection.y = -0.1f;
-                }
-            }
-            MoveDirection.y -= 0.1f;
-            Ctrl.Move(MoveDirection * Time.deltaTime);
-        }
+        GameObject bullet = new GameObject();
+        bullet.transform.position = new Vector3(transform.position.x, transform.position.y + 0.2f, transform.position.z);
+        bullet.transform.rotation = transform.rotation;
+        bullet.transform.localScale *= 0.25f;
+
+        MeshFilter bulletMeshFilter = bullet.AddComponent<MeshFilter>();
+        bulletMeshFilter.mesh = bulletMesh;
+        
+        MeshRenderer bulletMeshRenderer = bullet.AddComponent<MeshRenderer>();
+        bulletMeshRenderer.material = bulletMaterial;
+
+        SphereCollider bulletCollider = bullet.AddComponent<SphereCollider>();
+        bulletCollider.isTrigger = true;
+
+        bullet.AddComponent<Bullet>();
+
+        Destroy(bullet, 5f);
+
     }
     //---------------------------------------------------------------------
     // whether it is grounded

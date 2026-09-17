@@ -11,6 +11,7 @@ using System;
 using System.Security.Cryptography;
 using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Movement : MonoBehaviour
 {
@@ -44,6 +45,11 @@ public class Movement : MonoBehaviour
 
     public int dashCooldown = 0;
     public int score = 0;
+    public int health = 0;
+    private int tookDamage;
+    public Texture damageTexture;
+    public Texture dashTexture;
+    public Scene gameoverScene;
 
     // Start is called before the first frame update
     void Start()
@@ -57,10 +63,14 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
-        
+        if (health <= 0)
+        {
+            UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+            SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+        }
 
         mousePos = Input.mousePosition;
-        mouseOutOfBounds = (mousePos.x < 0 || mousePos.x > Screen.width) || (mousePos.y < 0 || mousePos.y > Screen.height);
+        mouseOutOfBounds = mousePos.x < 0 || mousePos.x > Screen.width || mousePos.y < 0 || mousePos.y > Screen.height;
         if(!mouseOutOfBounds) 
         {
             // Update orientation first, then move. Otherwise move orientation will lag
@@ -89,13 +99,22 @@ public class Movement : MonoBehaviour
     }
     public void OnGUI()
     {
-            if(menuState)
-            {
-                GUI.backgroundColor = Color.white;
-                GUI.Box(new Rect(100, 100, 200, 100), "Paused", onScreenStyle);
-            }
-
-            GUI.Box(new Rect(100, 50, 200, 100), "Score: " + score, onScreenStyle);
+        if(menuState)
+        {
+            GUI.backgroundColor = Color.white;
+            GUI.Box(new Rect(100, 100, 200, 100), "Paused", onScreenStyle);
+        }
+        if (tookDamage > 0)
+        {
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), damageTexture, ScaleMode.StretchToFill);
+            tookDamage--;
+        }
+        if (dashCooldown > 80)
+        {
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), dashTexture, ScaleMode.StretchToFill);
+        }
+        GUI.Box(new Rect(100, 50, 200, 100), "Score: " + score, onScreenStyle);
+        GUI.Box(new Rect(100, 25, 200, 100), "Health: " + health, onScreenStyle);
     }
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -182,7 +201,7 @@ public class Movement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.started && !menuState && !loading)
+        if (context.started && !menuState && !loading && dashCooldown == 0)
         {
             dash = true;
         }
@@ -194,11 +213,11 @@ public class Movement : MonoBehaviour
         if (direction.sqrMagnitude < 0.01)
             return;
         var scaledMoveSpeed = moveSpeed * Time.deltaTime;
-        if (dash && dashCooldown == 0)
+        if (dash)
         {
             scaledMoveSpeed *= 100;
             dash = false;
-            dashCooldown = 20;
+            dashCooldown = 100;
         }
         // For simplicity's sake, we just keep movement in a single plane here. Rotate
         // direction according to world Y rotation of player.
@@ -217,4 +236,9 @@ public class Movement : MonoBehaviour
         transform.localEulerAngles = m_Rotation;
     }
 
+    private void TakeDamage(int damage)
+    {
+        health -= damage;
+        tookDamage = 150;
+    }
 }

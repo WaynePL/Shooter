@@ -38,7 +38,7 @@ public class Spawner : MonoBehaviour
             Destroy(gameObject);
         }
 
-        counter++;
+        if (counter < 121) counter++;
     }
 
 }

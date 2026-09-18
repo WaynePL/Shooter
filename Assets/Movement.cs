@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using UnityEngine.AI;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.UI;
 
 public class Movement : MonoBehaviour
 {
@@ -50,6 +51,9 @@ public class Movement : MonoBehaviour
     public Texture damageTexture;
     public Texture dashTexture;
     public Scene gameoverScene;
+    public Gun currentGun;
+    public List<Gun> guns;
+    public int currentGunNumber = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -58,6 +62,7 @@ public class Movement : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         gravity = gravityConstant;
         loading = false;
+        currentGun = guns[currentGunNumber];
     }
 
     // Update is called once per frame
@@ -109,12 +114,39 @@ public class Movement : MonoBehaviour
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), damageTexture, ScaleMode.StretchToFill);
             tookDamage--;
         }
-        if (dashCooldown > 80)
-        {
-            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), dashTexture, ScaleMode.StretchToFill);
-        }
         GUI.Box(new Rect(100, 50, 200, 100), "Score: " + score, onScreenStyle);
         GUI.Box(new Rect(100, 25, 200, 100), "Health: " + health, onScreenStyle);
+    }
+    public void OnScroll(InputAction.CallbackContext context)
+    {
+        Transform currentGunTransform = currentGun.gunObject.transform;
+        currentGunTransform.localPosition = new Vector3(currentGunTransform.localPosition.x, currentGunTransform.localPosition.y, currentGun.zPosition - 1);
+        currentGun.gunObject.SetActive(false);
+        if (context.ReadValue<float>() > 0)
+        {
+            if (currentGunNumber == guns.Count() - 1)
+            {
+                currentGunNumber = 0;
+            }
+            else
+            {
+                currentGunNumber++;
+            }
+        }
+        else
+        {
+            if (currentGunNumber == 0)
+            {
+                currentGunNumber = guns.Count() - 1;
+            }
+            else
+            {
+                currentGunNumber--;
+            }
+        }
+        currentGun = guns[currentGunNumber];
+        currentGun.gunObject.SetActive(true);
+        currentGun.gunObject.transform.localPosition = new Vector3(currentGunTransform.localPosition.x, currentGunTransform.localPosition.y, currentGun.zPosition);
     }
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -240,5 +272,20 @@ public class Movement : MonoBehaviour
     {
         health -= damage;
         tookDamage = 150;
+    }
+}
+
+[System.Serializable]
+public class Gun
+{
+    public string name;
+    public float zPosition;
+    public GameObject gunObject;
+
+    public Gun(string name, float zPosition, GameObject gunObject)
+    {
+        this.name = name;
+        this.zPosition = zPosition;
+        this.gunObject = gunObject;
     }
 }

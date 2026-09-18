@@ -54,6 +54,8 @@ public class Movement : MonoBehaviour
     public Gun currentGun;
     public List<Gun> guns;
     public int currentGunNumber = 0;
+    public bool autofire = false;
+    public int autofireCooldown = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -90,6 +92,15 @@ public class Movement : MonoBehaviour
         {
             dashCooldown--;
         }
+        if (autofireCooldown == 0 && autofire)
+        {
+            Shoot();
+            autofireCooldown = 20;
+        }
+        else if (autofire)
+        {
+            autofireCooldown--;
+        }        
     }    
 
     public void FixedUpdate()
@@ -161,15 +172,33 @@ public class Movement : MonoBehaviour
     {
         if (context.started && !menuState && !loading)
         {
-            audioSource.Play();
-            Physics.Raycast(Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.47F, 0)), out RaycastHit hit);
-            
+            if (currentGun.firetype == Firetype.single)
+            {
+                Shoot();
+            }
+            else if (currentGun.firetype == Firetype.automatic)
+            {
+                autofire = true;
+            }
+        }
+        if (context.canceled  && !menuState && !loading && currentGun.firetype == Firetype.automatic)
+        {
+            autofire = false;
+            autofireCooldown = 0;
+        }
+    }
+
+    private void Shoot()
+    {
+        audioSource.Play();
+        Physics.Raycast(Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.47F, 0)), out RaycastHit hit);
+
 
 
         if (hit.transform)
         {//Impact point sparks
             GameObject hitObject = hit.transform.gameObject;
-            hitObject.SendMessage("TakeDamage", 1, SendMessageOptions.DontRequireReceiver);
+            hitObject.SendMessage("TakeDamage", currentGun.damage, SendMessageOptions.DontRequireReceiver);
             Debug.Log("Hit " + hitObject.name);
             GameObject impact = new GameObject();
             impact.transform.position = hit.point;
@@ -183,7 +212,7 @@ public class Movement : MonoBehaviour
             impactParticle.Stop();
             var impactRenderer = impactParticle.GetComponent<Renderer>();
             impactRenderer.material = particle;
-            
+
             var main = impactParticle.main;
 
             main.duration = 0.5f;
@@ -200,7 +229,7 @@ public class Movement : MonoBehaviour
             em.enabled = true;
             em.rateOverTime = 0;
             em.SetBursts(
-                new ParticleSystem.Burst[] 
+                new ParticleSystem.Burst[]
                 {
                     new ParticleSystem.Burst(0, 5)
                 }
@@ -208,7 +237,7 @@ public class Movement : MonoBehaviour
 
             impactParticle.Play();
 
-            Destroy(impact, 1f);}
+            Destroy(impact, 1f);
         }
     }
 
@@ -275,17 +304,29 @@ public class Movement : MonoBehaviour
     }
 }
 
+public enum Firetype
+{
+    single,
+    automatic
+}
+
 [System.Serializable]
 public class Gun
 {
     public string name;
     public float zPosition;
     public GameObject gunObject;
-
-    public Gun(string name, float zPosition, GameObject gunObject)
+    public Firetype firetype;
+    public int damage;
+    public bool acquired;
+    public Gun(string name, float zPosition, GameObject gunObject, Firetype firetype, int damage, bool acquired)
     {
         this.name = name;
         this.zPosition = zPosition;
         this.gunObject = gunObject;
+        this.firetype = firetype;
+        this.damage = damage;
+        this.acquired = acquired;
+
     }
 }

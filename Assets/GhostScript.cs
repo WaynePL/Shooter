@@ -22,8 +22,8 @@ public class GhostScript : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer[] MeshR;
     private float Dissolve_value = 1;
     private bool DissolveFlg = false;
-    private const int maxHP = 1;
-    private int HP = maxHP;
+    public const float maxHP = 3;
+    public float HP = maxHP;
     private Text HP_text;
     public GameObject player;
     public GameObject gate;
@@ -38,6 +38,9 @@ public class GhostScript : MonoBehaviour
     public Material dissolveMaterial;
     public Mesh[] particleMesh;
     public Material bulletMaterial;
+    public GameObject currentHealthBar;
+    public int healthBarX = 50;
+    public int healthBarY = 5;
 
     void Start()
     {
@@ -54,7 +57,7 @@ public class GhostScript : MonoBehaviour
         // Dissolve
         if (HP <= 0 && !DissolveFlg)
         {
-
+            player.GetComponent<Movement>().score++;
             if (gate) gate.GetComponent<Spawner>().instanceCount--;
             
             GameObject dissolve = new GameObject();
@@ -169,8 +172,10 @@ public class GhostScript : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        HP = 0;
-        player.GetComponent<Movement>().score++;
+        HP -= damage;
 
+        RectTransform rectTransform = currentHealthBar.GetComponent<RectTransform>();
+        
+        rectTransform.offsetMin = new Vector2(50 - ((HP / maxHP) * 50), rectTransform.offsetMin.y);
     }
 }

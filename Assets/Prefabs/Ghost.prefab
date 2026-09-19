@@ -448,6 +448,7 @@ MonoBehaviour:
   Ctrl: {fileID: 0}
   MeshR:
   - {fileID: 839705036205447455}
+  HP: 3
   player: {fileID: 7239454753149480871, guid: 4e5333b3dfa489a47b1f302b51baf843, type: 3}
   gate: {fileID: 0}
   status_name: 0
@@ -462,6 +463,7 @@ MonoBehaviour:
   currentHealthBar: {fileID: 2092749152005838313}
   healthBarX: 50
   healthBarY: 5
+  coinGameObject: {fileID: 5796244419762345032, guid: d2452862801e8c845b54f66a7336b3e5, type: 3}
 --- !u!114 &-5539435904399684674
 MonoBehaviour:
   m_ObjectHideFlags: 0

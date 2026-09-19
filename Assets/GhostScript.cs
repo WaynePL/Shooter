@@ -39,8 +39,7 @@ public class GhostScript : MonoBehaviour
     public Mesh[] particleMesh;
     public Material bulletMaterial;
     public GameObject currentHealthBar;
-    public int healthBarX = 50;
-    public int healthBarY = 5;
+    public GameObject coinGameObject;
 
     void Start()
     {
@@ -106,6 +105,11 @@ public class GhostScript : MonoBehaviour
             dissolveParticle.Play();
 
             Destroy(dissolve, 1f);
+
+            for(int i = 0; i < UnityEngine.Random.Range(0, 3); i++)
+            {
+                Instantiate(coinGameObject, transform.position, transform.rotation);
+            }
             
             Destroy(gameObject);
         }

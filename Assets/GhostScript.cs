@@ -56,7 +56,6 @@ public class GhostScript : MonoBehaviour
         // Dissolve
         if (HP <= 0 && !DissolveFlg)
         {
-            player.GetComponent<Movement>().score++;
             if (gate) gate.GetComponent<Spawner>().instanceCount--;
             
             GameObject dissolve = new GameObject();

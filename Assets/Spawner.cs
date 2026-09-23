@@ -13,6 +13,7 @@ public class Spawner : MonoBehaviour
     public GameObject spawnObject;
     public GameObject enemy;
     private int counter;
+    public int spawnTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -38,7 +39,7 @@ public class Spawner : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (counter < 121) counter++;
+        if (counter < spawnTimer) counter++;
     }
 
 }

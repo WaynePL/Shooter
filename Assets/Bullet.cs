@@ -17,7 +17,7 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.Translate(Vector3.forward * 0.1f);
+        transform.Translate(Vector3.forward * 0.2f);
     }
 
     void OnTriggerEnter(Collider collider)

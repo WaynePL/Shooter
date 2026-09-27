@@ -56,6 +56,7 @@ public class Movement : MonoBehaviour
     public int currentGunNumber = 0;
     public bool autofire = false;
     public int autofireCooldown = 0;
+    public float gamepadSensitivity;
 
     // Start is called before the first frame update
     void Start()
@@ -109,7 +110,6 @@ public class Movement : MonoBehaviour
         {
             if(!menuState)
             {
-
             }
         }
     }
@@ -125,39 +125,42 @@ public class Movement : MonoBehaviour
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), damageTexture, ScaleMode.StretchToFill);
             tookDamage--;
         }
-        GUI.Box(new Rect(100, 50, 200, 100), "Score: " + score, onScreenStyle);
+        GUI.Box(new Rect(100, 50, 200, 100), "Cash: " + score, onScreenStyle);
         GUI.Box(new Rect(100, 25, 200, 100), "Health: " + health, onScreenStyle);
     }
     public void OnScroll(InputAction.CallbackContext context)
     {
-        Transform currentGunTransform = currentGun.gunObject.transform;
-        currentGunTransform.localPosition = new Vector3(currentGunTransform.localPosition.x, currentGunTransform.localPosition.y, currentGun.zPosition - 1);
-        currentGun.gunObject.SetActive(false);
-        if (context.ReadValue<float>() > 0)
+        if (context.started)
         {
-            if (currentGunNumber == guns.Count() - 1)
+            Transform currentGunTransform = currentGun.gunObject.transform;
+            currentGunTransform.localPosition = new Vector3(currentGunTransform.localPosition.x, currentGunTransform.localPosition.y, currentGun.zPosition - 1);
+            currentGun.gunObject.SetActive(false);
+            if (context.ReadValue<float>() >= 0)
             {
-                currentGunNumber = 0;
+                if (currentGunNumber == guns.Count() - 1)
+                {
+                    currentGunNumber = 0;
+                }
+                else
+                {
+                    currentGunNumber++;
+                }
             }
             else
             {
-                currentGunNumber++;
+                if (currentGunNumber == 0)
+                {
+                    currentGunNumber = guns.Count() - 1;
+                }
+                else
+                {
+                    currentGunNumber--;
+                }
             }
+            currentGun = guns[currentGunNumber];
+            currentGun.gunObject.SetActive(true);
+            currentGun.gunObject.transform.localPosition = new Vector3(currentGunTransform.localPosition.x, currentGunTransform.localPosition.y, currentGun.zPosition);
         }
-        else
-        {
-            if (currentGunNumber == 0)
-            {
-                currentGunNumber = guns.Count() - 1;
-            }
-            else
-            {
-                currentGunNumber--;
-            }
-        }
-        currentGun = guns[currentGunNumber];
-        currentGun.gunObject.SetActive(true);
-        currentGun.gunObject.transform.localPosition = new Vector3(currentGunTransform.localPosition.x, currentGunTransform.localPosition.y, currentGun.zPosition);
     }
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -166,7 +169,16 @@ public class Movement : MonoBehaviour
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        lookDirection = context.ReadValue<Vector2>();
+        if (context.control.device == Gamepad.current.device)
+        {
+            // Multiply by Time.deltaTime and a separate gamepad sensitivity factor
+
+            lookDirection = context.ReadValue<Vector2>() * gamepadSensitivity * Time.deltaTime;
+        }
+        else
+        {
+            lookDirection = context.ReadValue<Vector2>();
+        }
     }
     public void OnFire(InputAction.CallbackContext context)
     {
@@ -307,7 +319,8 @@ public class Movement : MonoBehaviour
 public enum Firetype
 {
     single,
-    automatic
+    automatic,
+    spread
 }
 
 [System.Serializable]

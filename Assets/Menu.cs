@@ -8,7 +8,7 @@ public class Menu : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
     }
 
     // Update is called once per frame
@@ -21,7 +21,7 @@ public class Menu : MonoBehaviour
     {
         if(GUI.Button(new Rect(Screen.width / 2, Screen.height / 2, 100, 30), "Try Again"))
         {
-        SceneManager.LoadScene("scene1", LoadSceneMode.Single);
+            SceneManager.LoadScene("scene1", LoadSceneMode.Single);
         }
     }
 }

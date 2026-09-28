@@ -50,7 +50,7 @@ public class CoinDrop : MonoBehaviour
         }
         playerPosition = new Vector3(player.transform.position.x, player.transform.position.y - 1, player.transform.position.z);
         distanceToPlayer = Vector3.Distance(playerPosition, transform.position);
-        if (distanceToPlayer < 5)
+        if (distanceToPlayer < 20)
         {
             pickup = true;
         }
@@ -60,8 +60,8 @@ public class CoinDrop : MonoBehaviour
             transform.LookAt(playerPosition);
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
             coinCounter++;
-            speed += 0.001f;
-            if (coinCounter % 500 == 0 && !pickedUp)
+            speed += 0.005f;
+            if (coinCounter % 200 == 0 && !pickedUp)
             {
                 coinAmount++;
                 coinTextField.SetText("$" + coinAmount);

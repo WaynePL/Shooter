@@ -57,7 +57,12 @@ public class Movement : MonoBehaviour
     public bool autofire = false;
     public int autofireCooldown = 0;
     public float gamepadSensitivity;
-
+    public int pellets;
+    public Camera camera;
+    public float shotgunSpread = 5f;
+    public float shotgunRange = 100f;
+    public bool shotgunReady;
+    public int shotgunCooldown;
     // Start is called before the first frame update
     void Start()
     {
@@ -66,6 +71,9 @@ public class Movement : MonoBehaviour
         gravity = gravityConstant;
         loading = false;
         currentGun = guns[currentGunNumber];
+        camera = Camera.main;
+        shotgunReady = true;
+        shotgunCooldown = 0;
     }
 
     // Update is called once per frame
@@ -101,7 +109,16 @@ public class Movement : MonoBehaviour
         else if (autofire)
         {
             autofireCooldown--;
-        }        
+        }       
+        if (shotgunCooldown == 0)
+        {
+            shotgunReady = true;
+        }
+        else
+        {
+            shotgunCooldown--;
+        }
+
     }    
 
     public void FixedUpdate()
@@ -192,6 +209,10 @@ public class Movement : MonoBehaviour
             {
                 autofire = true;
             }
+            else if (currentGun.firetype == Firetype.spread)
+            {
+                Shoot(pellets);
+            }
         }
         if (context.canceled  && !menuState && !loading && currentGun.firetype == Firetype.automatic)
         {
@@ -203,7 +224,7 @@ public class Movement : MonoBehaviour
     private void Shoot()
     {
         audioSource.Play();
-        Physics.Raycast(Camera.main.ViewportPointToRay(new Vector3(0.5F, 0.47F, 0)), out RaycastHit hit);
+        Physics.Raycast(camera.ViewportPointToRay(new Vector3(0.5F, 0.47F, 0)), out RaycastHit hit);
 
 
 
@@ -211,7 +232,7 @@ public class Movement : MonoBehaviour
         {//Impact point sparks
             GameObject hitObject = hit.transform.gameObject;
             hitObject.SendMessage("TakeDamage", currentGun.damage, SendMessageOptions.DontRequireReceiver);
-            Debug.Log("Hit " + hitObject.name);
+
             GameObject impact = new GameObject();
             impact.transform.position = hit.point;
             var dir = (hit.point - gameObject.transform.position).normalized;
@@ -250,6 +271,79 @@ public class Movement : MonoBehaviour
             impactParticle.Play();
 
             Destroy(impact, 1f);
+        }
+    }
+
+    public void Shoot(int pellets)
+    {
+        if (shotgunReady)
+        {
+            shotgunReady = false;
+            shotgunCooldown = 60;
+            audioSource.Play();
+            for (int i = 0; i < pellets; i++)
+            {
+                // Calculate random spread offset
+                float xSpread = UnityEngine.Random.Range(-shotgunSpread, shotgunSpread);
+                float ySpread = UnityEngine.Random.Range(-shotgunSpread, shotgunSpread);
+                
+                Vector3 direction = camera.transform.forward + 
+                                    camera.transform.right * (xSpread / 50f) + 
+                                    camera.transform.up * (ySpread / 50f);
+
+                Ray ray = new Ray(camera.transform.position, direction);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit, shotgunRange))
+                {
+                    
+                    if (hit.transform)
+                    {//Impact point sparks
+                        GameObject hitObject = hit.transform.gameObject;
+                        hitObject.SendMessage("TakeDamage", currentGun.damage, SendMessageOptions.DontRequireReceiver);
+                        Debug.Log("hit " + hitObject.name);
+
+                        GameObject impact = new GameObject();
+                        impact.transform.position = hit.point;
+                        var dir = (hit.point - gameObject.transform.position).normalized;
+                        var facing = gameObject.transform.eulerAngles;
+                        facing.y += 180;
+                        facing.x = hit.normal.y * -90;
+                        impact.transform.eulerAngles = facing;
+
+                        ParticleSystem impactParticle = impact.AddComponent<ParticleSystem>();
+                        impactParticle.Stop();
+                        var impactRenderer = impactParticle.GetComponent<Renderer>();
+                        impactRenderer.material = particle;
+
+                        var main = impactParticle.main;
+
+                        main.duration = 0.5f;
+                        main.startLifetime = 0.1f;
+                        main.startSize = 0.05f;
+                        main.loop = false;
+
+                        var shape = impactParticle.shape;
+                        shape.shapeType = ParticleSystemShapeType.Cone;
+                        shape.angle = 30;
+                        shape.radius = 0;
+
+                        ParticleSystem.EmissionModule em = impactParticle.emission;
+                        em.enabled = true;
+                        em.rateOverTime = 0;
+                        em.SetBursts(
+                            new ParticleSystem.Burst[]
+                            {
+                                new ParticleSystem.Burst(0, 5)
+                            }
+                        );
+
+                        impactParticle.Play();
+
+                        Destroy(impact, 1f);
+                    }
+                }
+            }
         }
     }
 

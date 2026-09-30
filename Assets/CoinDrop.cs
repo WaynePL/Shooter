@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+using NUnit.Framework;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,6 +23,8 @@ public class CoinDrop : MonoBehaviour
     public float speed = 5f;
     public Vector3 playerPosition;
     private RaycastHit hit;
+    public bool chasing;
+    public int chaseTimer;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -58,17 +62,22 @@ public class CoinDrop : MonoBehaviour
         if(pickup)
         {
             transform.LookAt(playerPosition);
-            transform.Translate(Vector3.forward * speed * Time.deltaTime);
+            
             coinCounter++;
             speed += 0.005f;
-            if (coinCounter % 200 == 0 && !pickedUp)
+            if (coinCounter % 400 == 0 && !pickedUp)
             {
                 coinAmount++;
                 coinTextField.SetText("$" + coinAmount);
+                chaseTimer = 150;
                 //coinLevelUp.Play();
             }
-            
-            if (distanceToPlayer < 0.2f && !pickedUp)
+            if (chaseTimer > 0)
+            {
+                transform.Translate(Vector3.forward * speed * Time.deltaTime);
+                chaseTimer--;
+            }
+            if (distanceToPlayer < 0.5f && !pickedUp)
             {
                 pickupSound.Play();
                 player.GetComponent<Movement>().score += coinAmount;

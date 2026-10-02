@@ -186,7 +186,7 @@ public class Movement : MonoBehaviour
 
     public void OnLook(InputAction.CallbackContext context)
     {
-        if (context.control.device == Gamepad.current.device)
+        if (Gamepad.current != null && context.control.device == Gamepad.current.device)
         {
             // Multiply by Time.deltaTime and a separate gamepad sensitivity factor
 

@@ -56,66 +56,7 @@ public class GhostScript : MonoBehaviour
         // Dissolve
         if (HP <= 0 && !DissolveFlg)
         {
-            if (gate) gate.GetComponent<Spawner>().instanceCount--;
-            
-            GameObject dissolve = new GameObject();
-            dissolve.transform.position = new Vector3(transform.localPosition.x, transform.localPosition.y + 0.5f, transform.localPosition.z);
-            dissolve.transform.localScale *= 5f;
-            var facing = gameObject.transform.eulerAngles;
-            facing.x += 270;
-            dissolve.transform.eulerAngles = facing;
-
-            ParticleSystem dissolveParticle = dissolve.AddComponent<ParticleSystem>();
-            dissolveParticle.Stop();
-            var dissolveRenderer = dissolveParticle.GetComponent<Renderer>();
-            dissolveRenderer.material = dissolveMaterial;
-            var dissolveParticleRenderer = dissolveParticle.GetComponent<ParticleSystemRenderer>();
-            dissolveParticleRenderer.renderMode = ParticleSystemRenderMode.Mesh;
-            dissolveParticleRenderer.SetMeshes(particleMesh);
-
-            var main = dissolveParticle.main;
-
-            main.duration = 1f;
-            main.startLifetime = 1f;
-            main.startSize = 1f;
-            main.loop = false;
-            main.startSpeed = 0.1f;
-            main.startSpeedMultiplier = 0.5f;
-            
-            
-
-            var shape = dissolveParticle.shape;
-            shape.shapeType = ParticleSystemShapeType.Cone;
-            shape.angle = 70;
-            shape.radius = 0;
-
-            ParticleSystem.EmissionModule em = dissolveParticle.emission;
-            em.enabled = true;
-            em.rateOverTime = 0;
-            em.SetBursts(
-                new ParticleSystem.Burst[]
-                {
-                    new ParticleSystem.Burst(0, 5),
-                    new ParticleSystem.Burst(0.1f, 5),
-                    new ParticleSystem.Burst(0.2f, 5)
-                }
-            );
-
-            dissolveParticle.Play();
-
-            Destroy(dissolve, 1f);
-
-            for(int i = 0; i < UnityEngine.Random.Range(0, 3); i++)
-            {
-                Instantiate(coinGameObject, transform.position, transform.rotation);
-            }
-            
-            Destroy(gameObject);
-        }
-        // processing at respawn
-        else if (HP == maxHP && DissolveFlg)
-        {
-            DissolveFlg = false;
+            Death();
         }
 
         if (Vector3.Distance(player.transform.position, transform.position) > range)
@@ -136,6 +77,65 @@ public class GhostScript : MonoBehaviour
             }
         }
 
+    }
+
+    private void Death()
+    {
+        if (gate) gate.GetComponent<Spawner>().instanceCount--;
+
+        GameObject dissolve = new GameObject();
+        dissolve.transform.position = new Vector3(transform.localPosition.x, transform.localPosition.y + 0.5f, transform.localPosition.z);
+        dissolve.transform.localScale *= 5f;
+        var facing = gameObject.transform.eulerAngles;
+        facing.x += 270;
+        dissolve.transform.eulerAngles = facing;
+
+        ParticleSystem dissolveParticle = dissolve.AddComponent<ParticleSystem>();
+        dissolveParticle.Stop();
+        var dissolveRenderer = dissolveParticle.GetComponent<Renderer>();
+        dissolveRenderer.material = dissolveMaterial;
+        var dissolveParticleRenderer = dissolveParticle.GetComponent<ParticleSystemRenderer>();
+        dissolveParticleRenderer.renderMode = ParticleSystemRenderMode.Mesh;
+        dissolveParticleRenderer.SetMeshes(particleMesh);
+
+        var main = dissolveParticle.main;
+
+        main.duration = 1f;
+        main.startLifetime = 1f;
+        main.startSize = 1f;
+        main.loop = false;
+        main.startSpeed = 0.1f;
+        main.startSpeedMultiplier = 0.5f;
+
+
+
+        var shape = dissolveParticle.shape;
+        shape.shapeType = ParticleSystemShapeType.Cone;
+        shape.angle = 70;
+        shape.radius = 0;
+
+        ParticleSystem.EmissionModule em = dissolveParticle.emission;
+        em.enabled = true;
+        em.rateOverTime = 0;
+        em.SetBursts(
+            new ParticleSystem.Burst[]
+            {
+                    new ParticleSystem.Burst(0, 5),
+                    new ParticleSystem.Burst(0.1f, 5),
+                    new ParticleSystem.Burst(0.2f, 5)
+            }
+        );
+
+        dissolveParticle.Play();
+
+        Destroy(dissolve, 1f);
+
+        for (int i = 0; i < UnityEngine.Random.Range(0, 3); i++)
+        {
+            Instantiate(coinGameObject, transform.position, transform.rotation);
+        }
+
+        Destroy(gameObject);
     }
 
     private void rangedAttack()

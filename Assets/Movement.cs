@@ -142,6 +142,10 @@ public class Movement : MonoBehaviour
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), damageTexture, ScaleMode.StretchToFill);
             tookDamage--;
         }
+        if (dashCooldown > 0)
+        {
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), dashTexture, ScaleMode.StretchToFill);
+        }
         GUI.Box(new Rect(100, 50, 200, 100), "Cash: " + score, onScreenStyle);
         GUI.Box(new Rect(100, 25, 200, 100), "Health: " + health, onScreenStyle);
     }
